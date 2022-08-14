@@ -1,0 +1,1 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/xo2vd8mdmxs9jdsc?svg=true)](https://ci.appveyor.com/project/PershikovaEP/selenide-patterns)
