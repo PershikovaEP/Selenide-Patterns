@@ -18,13 +18,10 @@ public class DataGenerator {
     }
 
     public static String generateCity(String locale) {
-        // добавить логику для объявления переменной city и задания её значения, генерацию можно выполнить
-        // с помощью Faker, либо используя массив валидных городов и класс Random
-//        Faker faker = new Faker(new Locale("ru"));
-//        String city = faker.address().cityName();
+        // генерацию можно выполнить с помощью Faker, либо используя массив валидных городов и класс Random
         List<String> cityes = Arrays.asList("Воронеж", "Москва", "Пермь", "Санкт-Петербург", "Саратов", "Белгород", "Краснодар", "Пенза", "Владимир", "Рязань", "Челябинск", "Вологда");
-        Random r = new Random(1);
-        String city = cityes.get(r.nextInt( 11));
+        Random r = new Random();
+        String city = cityes.get(r.nextInt( (11)+1));
         return city;
     }
 
@@ -45,8 +42,6 @@ public class DataGenerator {
         }
 
         public static UserInfo generateUser(String locale) {
-            // добавить логику для создания пользователя user с использованием методов generateCity(locale),
-            // generateName(locale), generatePhone(locale)
             UserInfo user = new UserInfo(generateCity("ru"), generateName("ru"), generatePhone("ru"));
             return user;
         }

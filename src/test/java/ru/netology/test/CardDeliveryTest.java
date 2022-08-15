@@ -1,4 +1,4 @@
-package ru.netology;
+package ru.netology.test;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
@@ -25,13 +25,9 @@ public class CardDeliveryTest {
 //    Флажок согласия должен быть выставлен
 //    Тестируемая функциональность: отправка формы.
 
-
-
     @BeforeEach
     void setup() {
         open("http://localhost:9999");
-        Configuration.timeout=8000;
-        Configuration.headless=true;
 
     }
 
@@ -215,6 +211,7 @@ public class CardDeliveryTest {
                 .shouldHave(Condition.exactText("Поле обязательно для заполнения"));
     }
 
+
     @Test
     void shouldErrorInThePhoneFilledIn10Digits() {
         $x("//*[@data-test-id='city']//input").setValue(generateCity("ru"));
@@ -228,8 +225,11 @@ public class CardDeliveryTest {
                 .shouldHave(Condition.exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
     }
 
+    //    теперь в поле телефон вводятся только 11 цифр и плюс в начале. При вводе букв происходит их обрезка
+    //    и номер становится короче, а также при вводе 12 цифр и более
+
     @Test
-    void shouldErrorInThePhoneFilledIn12Digits() {
+    void shouldOrderCardDeliveryInThePhoneFilledIn12Digits() {
         $x("//*[@data-test-id='city']//input").setValue(generateCity("ru"));
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] input").doubleClick().setValue(DataGenerator.generateDate(7));
@@ -237,8 +237,9 @@ public class CardDeliveryTest {
         $x("//*[@data-test-id='phone']//input").setValue("+799988899889");
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Запланировать']").click();
-        $("[data-test-id='phone'] .input__sub")
-                .shouldHave(Condition.exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
+        $("[data-test-id='success-notification'] .notification__title")
+                .shouldBe(Condition.visible, Duration.ofSeconds(15))
+                .shouldHave(Condition.exactText("Успешно!"));
     }
 
     @Test
@@ -247,7 +248,7 @@ public class CardDeliveryTest {
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] input").doubleClick().setValue(DataGenerator.generateDate(7));
         $("[data-test-id='name'] input").setValue(generateName("ru"));
-        $x("//*[@data-test-id='phone']//input").setValue("+7999888998о");
+        $x("//*[@data-test-id='phone']//input").setValue("+799988899о8");
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Запланировать']").click();
         $("[data-test-id='phone'] .input__sub")
@@ -260,15 +261,16 @@ public class CardDeliveryTest {
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] input").doubleClick().setValue(DataGenerator.generateDate(7));
         $("[data-test-id='name'] input").setValue(generateName("ru"));
-        $x("//*[@data-test-id='phone']//input").setValue("+7999888998s");
+        $x("//*[@data-test-id='phone']//input").setValue("+799988899s8");
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Запланировать']").click();
         $("[data-test-id='phone'] .input__sub")
                 .shouldHave(Condition.exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
     }
 
+//   в поле телефон автоматически подставляется плюс в начале, а в другом месте плюс обрезается
     @Test
-    void shouldErrorInThePhoneFilledIsNotPlus() {
+    void shouldOrderCardDeliveryInThePhoneFilledIsNotPlus() {
         $x("//*[@data-test-id='city']//input").setValue(generateCity("ru"));
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] input").doubleClick().setValue(DataGenerator.generateDate(7));
@@ -276,12 +278,13 @@ public class CardDeliveryTest {
         $x("//*[@data-test-id='phone']//input").setValue("79998889988");
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Запланировать']").click();
-        $("[data-test-id='phone'] .input__sub")
-                .shouldHave(Condition.exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
+        $("[data-test-id='success-notification'] .notification__title")
+                .shouldBe(Condition.visible, Duration.ofSeconds(15))
+                .shouldHave(Condition.exactText("Успешно!"));
     }
 
     @Test
-    void shouldErrorInThePhoneFilledWhenPlusInMiddle() {
+    void shouldOrderCardDeliveryInThePhoneFilledWhenPlusInMiddle() {
         $x("//*[@data-test-id='city']//input").setValue(generateCity("ru"));
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] input").doubleClick().setValue(DataGenerator.generateDate(7));
@@ -289,8 +292,9 @@ public class CardDeliveryTest {
         $x("//*[@data-test-id='phone']//input").setValue("7+9998889988");
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Запланировать']").click();
-        $("[data-test-id='phone'] .input__sub")
-                .shouldHave(Condition.exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
+        $("[data-test-id='success-notification'] .notification__title")
+                .shouldBe(Condition.visible, Duration.ofSeconds(15))
+                .shouldHave(Condition.exactText("Успешно!"));
     }
 
     @Test
@@ -317,12 +321,12 @@ public class CardDeliveryTest {
         $x("//*[@data-test-id='city']//input").setValue("Во");
         $x("//*[text()='Воронеж']").click();
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(DataGenerator.generateDate(7));
+        $("[data-test-id='date'] input").doubleClick().setValue(DataGenerator.generateDate(2));
         $("[data-test-id='name'] input").setValue(generateName("ru"));
         $x("//*[@data-test-id='phone']//input").setValue(generatePhone("ru"));
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Запланировать']").click();
-        $("//*[text()='Заказ на выбранную дату невозможен']")
+        $x("//*[text()='Заказ на выбранную дату невозможен']")
                 .shouldHave(Condition.exactText("Заказ на выбранную дату невозможен"));
     }
 
@@ -357,20 +361,20 @@ public class CardDeliveryTest {
                 .shouldHave(Condition.exactText("Успешно!"));
     }
 
+//    Тестируемая функциональность: если заполнить форму повторно теми же данными за исключением "Даты встречи",
+//    то система предложит перепланировать время встречи. После нажатия на кнопке "Перепланировать"
+//    произойдёт перепланирование встречи
+
     @Test
     @DisplayName("Should successful plan and replan meeting")
     void shouldSuccessfulPlanAndReplanMeeting() {
+//        Для заполнения полей формы можно использовать пользователя validUser
 //        var validUser = DataGenerator.Registration.generateUser("ru");
+//        значения получать через validUser.getName и тд.
         var daysToAddForFirstMeeting = 4;
         var firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
         var daysToAddForSecondMeeting = 7;
         var secondMeetingDate = DataGenerator.generateDate(daysToAddForSecondMeeting);
-        // добавить логику теста в рамках которого будет выполнено планирование и перепланирование встречи.
-        // Для заполнения полей формы можно использовать пользователя validUser и строки с датами в переменных
-        // firstMeetingDate и secondMeetingDate. Можно также вызывать методы generateCity(locale),
-        // generateName(locale), generatePhone(locale) для генерации и получения в тесте соответственно города,
-        // имени и номера телефона без создания пользователя в методе generateUser(String locale) в датагенераторе
-
         $x("//*[@data-test-id='city']//input").setValue(generateCity("ru"));
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] input").doubleClick().setValue(firstMeetingDate);
@@ -381,9 +385,12 @@ public class CardDeliveryTest {
         $("[data-test-id='success-notification'] .notification__title")
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
                 .shouldHave(Condition.exactText("Успешно!"));
+        $("[data-test-id='success-notification'] .notification__closer").click();
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] input").doubleClick().setValue(secondMeetingDate);
-        $x("[data-test-id='replan-notification'] .button").click();
+        $x("//*[text()='Запланировать']").click();
+        $("[data-test-id='replan-notification']").shouldBe(Condition.visible, Duration.ofSeconds(15));
+        $("[data-test-id='replan-notification'] .button").click();
         $("[data-test-id='success-notification'] .notification__title")
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
                 .shouldHave(Condition.exactText("Успешно!"));
