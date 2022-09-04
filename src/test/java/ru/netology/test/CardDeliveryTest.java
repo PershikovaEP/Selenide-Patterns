@@ -2,9 +2,9 @@ package ru.netology.test;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.codeborne.selenide.logevents.SelenideLogger;
+import io.qameta.allure.selenide.AllureSelenide;
+import org.junit.jupiter.api.*;
 import org.openqa.selenium.Keys;
 import ru.netology.data.DataGenerator;
 
@@ -25,11 +25,19 @@ public class CardDeliveryTest {
 //    Флажок согласия должен быть выставлен
 //    Тестируемая функциональность: отправка формы.
 
+    @BeforeAll
+    static void setUpAll() {
+        SelenideLogger.addListener("allure", new AllureSelenide());
+    }
+
+    @AfterAll
+    static void tearDownAll() {
+        SelenideLogger.removeListener("allure");
+    }
+
     @BeforeEach
     void setup() {
         open("http://localhost:9999");
-        Configuration.timeout=10000;
-
     }
 
     @Test
@@ -254,12 +262,12 @@ public class CardDeliveryTest {
     }
 
     @Test
-    void shouldOrderCardDeliveryInThePhoneFilledWhenPlusInMiddleAndCodeDoesNotBelongToRussia() {
+    void shouldErrorInThePhoneFilledWhenPlusInMiddleAndCodeDoesNotBelongToRussia() {
         $x("//*[@data-test-id='city']//input").setValue(generateCity("ru"));
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] input").setValue(DataGenerator.generateDate(7));
         $("[data-test-id='name'] input").setValue(generateName("ru"));
-        $x("//*[@data-test-id='phone']//input").setValue("8+" + generatePhone("ru").substring(2));
+        $x("//*[@data-test-id='phone']//input").setValue("5+" + generatePhone("ru").substring(2));
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Запланировать']").click();
         $("[data-test-id='success-notification'] .notification__title")
